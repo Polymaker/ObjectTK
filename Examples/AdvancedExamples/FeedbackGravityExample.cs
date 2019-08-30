@@ -38,7 +38,7 @@ namespace Examples.AdvancedExamples
             _random = new Random();
             Load += OnLoad;
             RenderFrame += OnRenderFrame;
-            Keyboard.KeyDown += OnKeyDown;
+            KeyDown += OnKeyDown;
         }
 
         private float Rand(float range)

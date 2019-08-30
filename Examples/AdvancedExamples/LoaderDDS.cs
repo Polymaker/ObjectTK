@@ -429,7 +429,7 @@ namespace Examples.AdvancedExamples
                             case TextureTarget.Texture2D:
                                 GL.CompressedTexImage2D( TextureTarget.Texture2D,
                                                          Level,
-                                                         _PixelInternalFormat,
+                                                         (InternalFormat)_PixelInternalFormat,
                                                          Width,
                                                          Height,
                                                         TextureLoaderParameters.Border,
@@ -439,7 +439,7 @@ namespace Examples.AdvancedExamples
                             case TextureTarget.TextureCubeMap:
                                 GL.CompressedTexImage2D( TextureTarget.TextureCubeMapPositiveX + Slices,
                                                          Level,
-                                                         _PixelInternalFormat,
+                                                         (InternalFormat)_PixelInternalFormat,
                                                          Width,
                                                          Height,
                                                          TextureLoaderParameters.Border,

@@ -179,41 +179,43 @@ namespace Examples.AdvancedExamples
 
         protected void OnUpdateFrame(object sender, FrameEventArgs e)
         {
-            if (Keyboard[Key.Space]) Trace.WriteLine("GL: " + GL.GetError());
+            var keyboard = OpenTK.Input.Keyboard.GetState();
+            if (keyboard[Key.Space]) Trace.WriteLine("GL: " + GL.GetError());
             var factor = (float)e.Time;
-            if (Keyboard[Key.Q])
+            if (keyboard[Key.Q])
             {
                 _materialScaleAndBiasAndShininess.X += factor;
                 Trace.WriteLine("Scale: " + _materialScaleAndBiasAndShininess.X + " Bias: " + _materialScaleAndBiasAndShininess.Y);
             }
-            if (Keyboard[Key.A])
+            if (keyboard[Key.A])
             {
                 _materialScaleAndBiasAndShininess.X -= factor;
                 Trace.WriteLine("Scale: " + _materialScaleAndBiasAndShininess.X + " Bias: " + _materialScaleAndBiasAndShininess.Y);
             }
-            if (Keyboard[Key.W])
+            
+            if (keyboard[Key.W])
             {
                 _materialScaleAndBiasAndShininess.Y += factor;
                 Trace.WriteLine("Scale: " + _materialScaleAndBiasAndShininess.X + " Bias: " + _materialScaleAndBiasAndShininess.Y);
             }
-            if (Keyboard[Key.S])
+            if (keyboard[Key.S])
             {
                 _materialScaleAndBiasAndShininess.Y -= factor;
                 Trace.WriteLine("Scale: " + _materialScaleAndBiasAndShininess.X + " Bias: " + _materialScaleAndBiasAndShininess.Y);
             }
-            if (Keyboard[Key.E])
+            if (keyboard[Key.E])
             {
                 _materialScaleAndBiasAndShininess.Z += factor*100;
                 Trace.WriteLine("Shininess: " + _materialScaleAndBiasAndShininess.Z);
             }
-            if (Keyboard[Key.D])
+            if (keyboard[Key.D])
             {
                 _materialScaleAndBiasAndShininess.Z -= factor*100;
                 Trace.WriteLine("Shininess: " + _materialScaleAndBiasAndShininess.Z);
             }
-
-            _lightPosition.X = (-(Width / 2) + Mouse.X) / 100f;
-            _lightPosition.Y = ((Height / 2) - Mouse.Y) / 100f;
+            var mouse = OpenTK.Input.Mouse.GetState();
+            _lightPosition.X = (-(Width / 2) + mouse.X) / 100f;
+            _lightPosition.Y = ((Height / 2) - mouse.Y) / 100f;
         }
 
         protected void OnRenderFrame(object sender, FrameEventArgs e)

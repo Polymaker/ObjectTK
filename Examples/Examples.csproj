@@ -36,9 +36,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,11 +76,12 @@
     <None Include="Data\Shaders\ExampleShader.glsl" />
     <None Include="Data\Shaders\Gravity.glsl" />
     <None Include="Data\Shaders\Parallax.glsl" />
-    <None Include="Data\Shaders\SimpleColor.glsl" />
+    <EmbeddedResource Include="Data\Shaders\SimpleColor.glsl" />
     <None Include="Data\Shaders\SimpleTexture.glsl" />
     <None Include="app.config" />
     <None Include="Data\Shaders\Skybox.glsl" />
     <None Include="Data\Shaders\TextureGrid.glsl" />
+    <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -26,7 +26,7 @@ namespace ObjectTK.Tools.Cameras
             var leftRight = Vector3.Cross(state.Up, state.LookAt);
             var forward = Vector3.Cross(leftRight, state.Up);
             // rotate look at direction
-            var rot = Matrix4.CreateFromAxisAngle(state.Up, -delta.X) * Matrix4.CreateFromAxisAngle(leftRight, delta.Y);
+            var rot = Matrix3.CreateFromAxisAngle(state.Up, -delta.X) * Matrix3.CreateFromAxisAngle(leftRight, delta.Y);
             Vector3.Transform(ref state.LookAt, ref rot, out state.LookAt);
             // renormalize to prevent summing up of floating point errors
             state.LookAt.Normalize();

@@ -89,7 +89,7 @@ namespace ObjectTK.Buffers
         public void DrawElementsIndirect(PrimitiveType mode, DrawElementsType type = DrawElementsType.UnsignedInt, int offset = 0)
         {
             AssertActive();
-            GL.DrawElementsIndirect(mode, (All)type, new IntPtr(offset));
+            GL.DrawElementsIndirect(mode, type, new IntPtr(offset));
         }
 
         public void MultiDrawElements(PrimitiveType mode, int[] count, DrawElementsType type = DrawElementsType.UnsignedInt)
