@@ -136,7 +136,7 @@ namespace ObjectTK.Shaders
                     if (!line.StartsWith(includeKeyword))
                     {
                         // add correct line number offset to the corresponding section within the effect file
-                        if (fixLine)
+                        if (fixLine && !line.StartsWith("#version"))
                         {
                             source.AppendLine(string.Format("#line {0} {1}", lineNumber, fileNumber));
                             fixLine = false;
