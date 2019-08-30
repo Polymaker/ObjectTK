@@ -43,6 +43,11 @@ namespace ObjectTK.Shaders.Sources
             EffectKey = effectKey;
         }
 
+        public string GetDirectoryName()
+        {
+            return System.IO.Path.GetDirectoryName(EffectKey);
+        }
+
         /// <summary>
         /// Retrieves all shader sources from attributes tagged to the given program type.
         /// </summary>

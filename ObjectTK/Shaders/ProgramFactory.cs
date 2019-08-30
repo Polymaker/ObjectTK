@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using log4net;
 using ObjectTK.Exceptions;
 using ObjectTK.Shaders.Sources;
@@ -53,6 +54,8 @@ namespace ObjectTK.Shaders
         {
             // retrieve shader types and filenames from attributes
             var shaders = ShaderSourceAttribute.GetShaderSources(typeof(T));
+            var shaderFiles = typeof(T).GetCustomAttributes<SourceFileAttribute>(false).ToList();
+
             if (shaders.Count == 0) throw new ObjectTKException("ShaderSourceAttribute(s) missing!");
             // create program instance
             var program = (T)Activator.CreateInstance(typeof(T));
@@ -67,7 +70,8 @@ namespace ObjectTK.Shaders
                         Logger.DebugFormat("Compiling {0}: {1}", attribute.Type, attribute.EffectKey);
                         // load the source from effect(s)
                         var included = new List<Effect.Section>();
-                        var source = GetShaderSource(attribute.EffectKey, included);
+                        //GetShaderSource(typeof(T), attribute);
+                        var source = GetShaderSource(attribute.EffectKey, shaderFiles, included);
                         // assign source filenames for proper information log output
                         shader.SourceFiles = included.Select(_ => _.Effect.Path).ToList();
                         // compile shader source
@@ -94,7 +98,7 @@ namespace ObjectTK.Shaders
         /// <param name="effectKey">Specifies the effect key to load.</param>
         /// <param name="included">Holds the effectKeys of all shaders already loaded to prevent multiple inclusions.</param>
         /// <returns>The fully assembled shader source.</returns>
-        private static string GetShaderSource(string effectKey, List<Effect.Section> included = null)
+        private static string GetShaderSource(string effectKey, List<SourceFileAttribute> files, List<Effect.Section> included = null)
         {
             if (included == null) included = new List<Effect.Section>();
             // retrieve effect section
@@ -104,7 +108,30 @@ namespace ObjectTK.Shaders
                 var directory = Path.GetDirectoryName(effectKey);
                 var filename = Path.GetFileName(effectKey);
                 var separator = filename.IndexOf('.');
-                var effectPath = Path.ChangeExtension(Path.Combine(BasePath, directory, filename.Substring(0, separator)), Extension);
+                var sourceName = filename.Substring(0, separator);
+
+                var effectPath = Path.ChangeExtension(Path.Combine(BasePath, directory, sourceName), Extension);
+
+  
+                var effectFile = files.FirstOrDefault(x => x.SourceName.ToUpper() == sourceName.ToUpper());
+
+                if (effectFile != null)
+                {
+                    if (effectFile.Embedded)
+                    {
+                        //var stream = 
+                    }
+                    else
+                    {
+                        if (!File.Exists(effectFile.Filename))
+                        {
+                            var tmp = Path.Combine(BasePath, effectFile.Filename);
+                            if (File.Exists(tmp))
+                                effectPath = tmp;
+                        }
+                    }
+                }
+                
                 var shaderKey = filename.Substring(separator + 1);
                 section = Effect.GetSection(effectPath, shaderKey);
             }
@@ -150,7 +177,7 @@ namespace ObjectTK.Shaders
                         // make the include path relative to the current file
                         includedEffectKey = Path.Combine(Path.GetDirectoryName(effectKey) ?? "", includedEffectKey);
                         // replace current line with the source of the included section
-                        source.Append(GetShaderSource(includedEffectKey, included));
+                        source.Append(GetShaderSource(includedEffectKey, files, included));
                         // remember to fix the line numbering on the next line
                         fixLine = true;
                     }
