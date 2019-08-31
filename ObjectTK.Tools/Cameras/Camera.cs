@@ -43,7 +43,7 @@ namespace ObjectTK.Tools.Cameras
             Update();
         }
 
-        public void Enable(GameWindow window)
+        public void Enable(IGameEvents window)
         {
             if (Behavior == null) throw new InvalidOperationException("Can not enable Camera while the Behavior is not set.");
             window.UpdateFrame += UpdateFrame;
@@ -51,7 +51,7 @@ namespace ObjectTK.Tools.Cameras
             window.MouseWheel += MouseWheelChanged;
         }
 
-        public void Disable(GameWindow window)
+        public void Disable(IGameEvents window)
         {
             window.UpdateFrame -= UpdateFrame;
             window.MouseMove -= MouseMove;
