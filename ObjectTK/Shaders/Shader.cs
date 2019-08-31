@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using log4net;
 using ObjectTK.Exceptions;
+using ObjectTK.Shaders.Sources;
 using OpenTK.Graphics.OpenGL;
 
 namespace ObjectTK.Shaders
@@ -31,7 +32,7 @@ namespace ObjectTK.Shaders
         /// <summary>
         /// Specifies a list of source filenames which are used to improve readability of the the information log in case of an error.
         /// </summary>
-        public List<string> SourceFiles;
+        public List<SourceFile> SourceFiles { get; private set; }
 
         /// <summary>
         /// Used to match and replace the source filenames into the information log.
@@ -46,6 +47,7 @@ namespace ObjectTK.Shaders
             : base(GL.CreateShader(type))
         {
             Type = type;
+            SourceFiles = new List<SourceFile>();
         }
 
         protected override void Dispose(bool manual)
@@ -87,7 +89,7 @@ namespace ObjectTK.Shaders
         private string GetSource(Match match)
         {
             var index = int.Parse(match.Groups[1].Value);
-            return index < SourceFiles.Count ? string.Format("ERROR: {0}:", SourceFiles[index]) : match.ToString();
+            return index < SourceFiles.Count ? string.Format("ERROR: {0}:", SourceFiles[index].Path) : match.ToString();
         }
     }
 }

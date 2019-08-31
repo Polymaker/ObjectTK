@@ -37,7 +37,7 @@ namespace ObjectTK.Shaders.Sources
         /// </summary>
         /// <param name="type">Specifies the type of the shader.</param>
         /// <param name="effectKey">Specifies the effect key for this shader.</param>
-        protected ShaderSourceAttribute(ShaderType type, string effectKey)
+        internal protected ShaderSourceAttribute(ShaderType type, string effectKey)
         {
             Type = type;
             EffectKey = effectKey;
@@ -46,6 +46,20 @@ namespace ObjectTK.Shaders.Sources
         public string GetDirectoryName()
         {
             return System.IO.Path.GetDirectoryName(EffectKey);
+        }
+
+        public string GetSourceName()
+        {
+            var filename = System.IO.Path.GetFileName(EffectKey);
+            var separator = filename.IndexOf('.');
+            return filename.Substring(0, separator);
+        }
+
+        public string GetSectionName()
+        {
+            var filename = System.IO.Path.GetFileName(EffectKey);
+            var separator = filename.IndexOf('.');
+            return filename.Substring(separator + 1);
         }
 
         /// <summary>

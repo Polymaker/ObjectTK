@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using log4net;
+using ObjectTK.Shaders.Sources;
 
 namespace ObjectTK.Shaders
 {
@@ -28,6 +29,8 @@ namespace ObjectTK.Shaders
         /// Specifies the Path to the effects source file.
         /// </summary>
         public string Path { get; private set; }
+
+        public SourceFile Source { get; private set; }
 
         /// <summary>
         /// Holds all sections contained within this effect.
@@ -66,6 +69,12 @@ namespace ObjectTK.Shaders
             _sections = new Dictionary<string, Section>();
         }
 
+        private Effect(SourceFile source)
+        {
+            Source = source;
+            _sections = new Dictionary<string, Section>();
+        }
+
         /// <summary>
         /// Retrieves the best matching section to the given shader key.
         /// </summary>
@@ -94,6 +103,69 @@ namespace ObjectTK.Shaders
         public static Section GetSection(string effectPath, string shaderKey)
         {
             return LoadEffect(effectPath).GetMatchingSection(shaderKey);
+        }
+
+        public static Effect LoadFrom(SourceFile file)
+        {
+            // return cached effect if available
+            if (Cache.ContainsKey(file.Path)) return Cache[file.Path];
+
+            // otherwise load the whole effect file
+            const string sectionSeparator = "--";
+            try
+            {
+                var fileStream = file.GetStream();
+                if (fileStream == null)
+                {
+                    if (file.Embedded)
+                        throw new KeyNotFoundException($"The manifest resource name '{file.Path}' was not found in assembly '{file.Assembly.GetName().Name}'");
+                    else
+                        throw new FileNotFoundException("Effect source file not found", file.Path);
+                }
+
+                using (var reader = new StreamReader(fileStream))
+                {
+                    var effect = new Effect(file);
+                    var source = new StringBuilder();
+                    Section section = null;
+                    var lineNumber = 1;
+                    while (!reader.EndOfStream)
+                    {
+                        // read the file line by line
+                        var line = reader.ReadLine();
+                        if (line == null) break;
+                        // count line number
+                        lineNumber++;
+                        // append code to current section until a section separator is reached
+                        if (!line.StartsWith(sectionSeparator))
+                        {
+                            source.AppendLine(line);
+                            continue;
+                        }
+                        // write source to current section
+                        if (section != null) section.Source = source.ToString();
+                        // start new section
+                        section = new Section
+                        {
+                            Effect = effect,
+                            ShaderKey = line.Substring(sectionSeparator.Length).Trim(),
+                            FirstLineNumber = lineNumber
+                        };
+                        effect._sections.Add(section.ShaderKey, section);
+                        source.Clear();
+                    }
+                    // make sure the last section is finished
+                    if (section != null) section.Source = source.ToString();
+                    // cache the effect
+                    Cache.Add(file.Path, effect);
+                    return effect;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Error("Effect while reading source file", ex);
+                throw;
+            }
         }
 
         /// <summary>
