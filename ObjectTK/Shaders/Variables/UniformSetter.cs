@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Linq;
 using ObjectTK.Exceptions;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace ObjectTK.Shaders.Variables
@@ -49,6 +50,7 @@ namespace ObjectTK.Shaders.Variables
                 new Map<double>(GL.Uniform1),
                 new Map<Half>((_, half) => GL.Uniform1(_, half)),
                 new Map<Color>((_, color) => GL.Uniform4(_, color)),
+                new Map<Color4>((_, color) => GL.Uniform4(_, color)),
                 new Map<Vector2>(GL.Uniform2),
                 new Map<Vector3>(GL.Uniform3),
                 new Map<Vector4>(GL.Uniform4),
