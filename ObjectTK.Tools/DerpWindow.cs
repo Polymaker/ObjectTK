@@ -20,7 +20,7 @@ namespace ObjectTK.Tools
     /// ModelView and Projection matrices and improved timing.
     /// </summary>
     public abstract class DerpWindow
-        : GameWindow
+        : GameWindow, IGameEvents
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DerpWindow));
 

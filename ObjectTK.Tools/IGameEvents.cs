@@ -9,10 +9,10 @@ namespace ObjectTK.Tools
 {
     public interface IGameEvents
     {
-        EventHandler<FrameEventArgs> UpdateFrame { get; set; }
+        event EventHandler<FrameEventArgs> UpdateFrame;
 
-        EventHandler<MouseMoveEventArgs> MouseMove { get; set; }
+        event EventHandler<MouseMoveEventArgs> MouseMove;
 
-        EventHandler<MouseWheelEventArgs> MouseWheel { get; set; }
+        event EventHandler<MouseWheelEventArgs> MouseWheel;
     }
 }

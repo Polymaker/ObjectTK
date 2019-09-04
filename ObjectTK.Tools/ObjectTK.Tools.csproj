@@ -52,6 +52,7 @@
     <Compile Include="Cameras\ThirdPersonBehavior.cs" />
     <Compile Include="DerpWindow.cs" />
     <Compile Include="FrameTimer.cs" />
+    <Compile Include="IGameEvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapes\Circle.cs" />
     <Compile Include="Shapes\ColorCube.cs" />
