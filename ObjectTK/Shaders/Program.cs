@@ -71,6 +71,14 @@ namespace ObjectTK.Shaders
         }
 
         /// <summary>
+        /// Unbinds the currently active program if any.
+        /// </summary>
+        public static void ClearProgram()
+        {
+            GL.UseProgram(0);
+        }
+
+        /// <summary>
         /// Attach shader object.
         /// </summary>
         /// <param name="shader">Specifies the shader object to attach.</param>

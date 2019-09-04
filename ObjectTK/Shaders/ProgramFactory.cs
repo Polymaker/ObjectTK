@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using log4net;
 using ObjectTK.Exceptions;
 using ObjectTK.Shaders.Sources;
@@ -53,6 +54,8 @@ namespace ObjectTK.Shaders
         {
             // retrieve shader types and filenames from attributes
             var shaders = ShaderSourceAttribute.GetShaderSources(typeof(T));
+            var shaderFiles = SourceFileAttribute.GetShaderSourceFiles(typeof(T), shaders);
+
             if (shaders.Count == 0) throw new ObjectTKException("ShaderSourceAttribute(s) missing!");
             // create program instance
             var program = (T)Activator.CreateInstance(typeof(T));
@@ -66,12 +69,12 @@ namespace ObjectTK.Shaders
                     {
                         Logger.DebugFormat("Compiling {0}: {1}", attribute.Type, attribute.EffectKey);
                         // load the source from effect(s)
-                        var included = new List<Effect.Section>();
-                        var source = GetShaderSource(attribute.EffectKey, included);
+                        var includedSections = new List<Effect.Section>();
+                        var sourceCode = GetShaderSource(shaderFiles, attribute, includedSections);
                         // assign source filenames for proper information log output
-                        shader.SourceFiles = included.Select(_ => _.Effect.Path).ToList();
+                        shader.SourceFiles.AddRange(includedSections.Select(i => i.Effect.Source));
                         // compile shader source
-                        shader.CompileSource(source);
+                        shader.CompileSource(sourceCode);
                         // attach shader to the program
                         program.Attach(shader);
                     }
@@ -91,35 +94,45 @@ namespace ObjectTK.Shaders
         /// Load shader source file(s).<br/>
         /// Supports multiple source files via "#include xx" directives and corrects the line numbering by using the glsl standard #line directive.
         /// </summary>
-        /// <param name="effectKey">Specifies the effect key to load.</param>
+        /// <param name="files"></param>
+        /// <param name="sourceAttribute"></param>
         /// <param name="included">Holds the effectKeys of all shaders already loaded to prevent multiple inclusions.</param>
         /// <returns>The fully assembled shader source.</returns>
-        private static string GetShaderSource(string effectKey, List<Effect.Section> included = null)
+        private static string GetShaderSource(List<SourceFile> files, ShaderSourceAttribute sourceAttribute, List<Effect.Section> included = null)
         {
             if (included == null) included = new List<Effect.Section>();
             // retrieve effect section
             Effect.Section section;
+
             try
             {
-                var directory = Path.GetDirectoryName(effectKey);
-                var filename = Path.GetFileName(effectKey);
-                var separator = filename.IndexOf('.');
-                var effectPath = Path.ChangeExtension(Path.Combine(BasePath, directory, filename.Substring(0, separator)), Extension);
-                var shaderKey = filename.Substring(separator + 1);
-                section = Effect.GetSection(effectPath, shaderKey);
+                var shaderSource = sourceAttribute.GetSourceName();
+                var shaderKey = sourceAttribute.GetSectionName();
+                var effectFile = files.FirstOrDefault(x => x.SourceName.Equals(shaderSource, StringComparison.InvariantCultureIgnoreCase));
+
+                if (effectFile == null)
+                    throw new Exception($"Effect file not found for shader source '{shaderSource}'");
+
+                var effect = Effect.LoadFrom(effectFile);
+                section = effect.GetMatchingSection(shaderKey);
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("Invalid effect key: {0}", effectKey), ex);
+                throw new Exception(string.Format("Invalid effect key: {0}", sourceAttribute.EffectKey), ex);
             }
-            if (section == null) throw new Exception(string.Format("Shader source not found: {0}", effectKey));
+
+            if (section == null)
+                throw new Exception(string.Format("Shader source not found: {0}", sourceAttribute.EffectKey));
+
             // check for multiple includes of the same section
             if (included.Contains(section))
             {
-                Logger.WarnFormat("Shader already included: {0}", effectKey);
-                return "";
+                Logger.WarnFormat("Shader already included: {0}", sourceAttribute.EffectKey);
+                return string.Empty;
             }
+
             included.Add(section);
+
             // parse source for #include directives and insert proper #line annotations
             using (var reader = new StringReader(section.Source))
             {
@@ -145,12 +158,9 @@ namespace ObjectTK.Shaders
                     }
                     else
                     {
-                        // parse the included filename
-                        var includedEffectKey = line.Remove(0, includeKeyword.Length).Trim();
-                        // make the include path relative to the current file
-                        includedEffectKey = Path.Combine(Path.GetDirectoryName(effectKey) ?? "", includedEffectKey);
+                        var tmpAttr = new ShaderSourceAttribute(sourceAttribute.Type, includeKeyword);
                         // replace current line with the source of the included section
-                        source.Append(GetShaderSource(includedEffectKey, included));
+                        source.Append(GetShaderSource(files, tmpAttr, included));
                         // remember to fix the line numbering on the next line
                         fixLine = true;
                     }

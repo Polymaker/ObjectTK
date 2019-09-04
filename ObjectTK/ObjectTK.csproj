@@ -70,6 +70,8 @@
     <Compile Include="Shaders\Program.cs" />
     <Compile Include="Shaders\ProgramFactory.cs" />
     <Compile Include="Shaders\Shader.cs" />
+    <Compile Include="Shaders\Sources\SourceFile.cs" />
+    <Compile Include="Shaders\Sources\SourceFileAttribute.cs" />
     <Compile Include="Shaders\TransformProgram.cs" />
     <Compile Include="Shaders\Sources\ComputeShaderSourceAttribute.cs" />
     <Compile Include="Shaders\Sources\FragmentShaderSourceAttribute.cs" />

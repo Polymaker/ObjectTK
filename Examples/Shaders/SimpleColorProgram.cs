@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Examples.Shaders
 {
+    [SourceFile("Examples.Data.Shaders.SimpleColor.glsl", "SimpleColor", Embedded = true)]
     [VertexShaderSource("SimpleColor.Vertex")]
     [FragmentShaderSource("SimpleColor.Fragment")]
     public class SimpleColorProgram
