@@ -33,6 +33,11 @@ namespace ObjectTK.Shaders.Variables
             {
                 Setter = setter;
             }
+
+            protected override void SetGeneric(int location, object value)
+            {
+                Setter(location, (T)value);
+            }
         }
 
         private UniformSetter() { }
@@ -72,11 +77,20 @@ namespace ObjectTK.Shaders.Variables
             };
         }
 
+        protected abstract void SetGeneric(int location, object value);
+
         public static Action<int, T> Get<T>()
         {
             var setter = Setters.FirstOrDefault(_ => _.MappedType == typeof(T));
             if (setter == null) throw new UniformTypeNotSupportedException(typeof(T));
             return ((Map<T>)setter).Setter;
+        }
+
+        internal static void SetGeneric(Type type, int location, object value)
+        {
+            var setter = Setters.FirstOrDefault(_ => _.MappedType == type);
+            if (setter == null) throw new UniformTypeNotSupportedException(type);
+            setter.SetGeneric(location, value);
         }
     }
 }

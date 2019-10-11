@@ -80,6 +80,7 @@
     <Compile Include="Shaders\Sources\TessControlShaderSourceAttribute.cs" />
     <Compile Include="Shaders\Sources\TessEvaluationShaderSourceAttribute.cs" />
     <Compile Include="Shaders\Sources\VertexShaderSourceAttribute.cs" />
+    <Compile Include="Shaders\Variables\ArrayUniform.cs" />
     <Compile Include="Shaders\Variables\BufferBinding.cs" />
     <Compile Include="Shaders\Variables\FragData.cs" />
     <Compile Include="Shaders\Variables\ImageUniform.cs" />
