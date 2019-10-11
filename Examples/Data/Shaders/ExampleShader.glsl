@@ -1,8 +1,5 @@
--- Version
-#version 140
-
 -- Vertex
-#include ExampleShader.Version
+#version 140
 in vec3 InPosition;
 uniform mat4 ModelViewProjectionMatrix;
 
@@ -12,7 +9,7 @@ void main()
 }
 
 -- Fragment
-#include ExampleShader.Version
+#version 140
 out vec4 FragColor;
 
 void main()
