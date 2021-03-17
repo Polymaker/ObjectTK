@@ -37,6 +37,8 @@ namespace ObjectTK.Shaders
         /// </summary>
         private readonly Dictionary<string, Section> _sections;
 
+        public IEnumerable<Section> Sections => _sections.Values;
+
         /// <summary>
         /// Represents a section within an effect file.
         /// </summary>
@@ -62,7 +64,12 @@ namespace ObjectTK.Shaders
             /// </summary>
             public int FirstLineNumber;
         }
-        
+
+        private Effect()
+        {
+            _sections = new Dictionary<string, Section>();
+        }
+
         private Effect(string path)
         {
             Path = path;
@@ -86,7 +93,7 @@ namespace ObjectTK.Shaders
             foreach (var section in _sections.Values)
             {
                 // find longest matching section key
-                if (shaderKey.StartsWith(section.ShaderKey) && (closestMatch == null || section.ShaderKey.Length > closestMatch.ShaderKey.Length))
+                if (shaderKey.ToLower().StartsWith(section.ShaderKey.ToLower()) && (closestMatch == null || section.ShaderKey.Length > closestMatch.ShaderKey.Length))
                 {
                     closestMatch = section;
                 }
@@ -165,6 +172,46 @@ namespace ObjectTK.Shaders
             {
                 Logger.Error("Effect while reading source file", ex);
                 throw;
+            }
+        }
+
+        public static Effect Parse(string effectSource)
+        {
+            const string sectionSeparator = "--";
+            using (StringReader reader = new StringReader(effectSource))
+            {
+                var effect = new Effect();
+                var source = new StringBuilder();
+                Section section = null;
+                var lineNumber = 1;
+                while (reader.Peek() > 0)
+                {
+                    // read the file line by line
+                    var line = reader.ReadLine();
+                    if (line == null) break;
+                    // count line number
+                    lineNumber++;
+                    // append code to current section until a section separator is reached
+                    if (!line.StartsWith(sectionSeparator))
+                    {
+                        source.AppendLine(line);
+                        continue;
+                    }
+                    // write source to current section
+                    if (section != null) section.Source = source.ToString();
+                    // start new section
+                    section = new Section
+                    {
+                        Effect = effect,
+                        ShaderKey = line.Substring(sectionSeparator.Length).Trim(),
+                        FirstLineNumber = lineNumber
+                    };
+                    effect._sections.Add(section.ShaderKey, section);
+                    source.Clear();
+                }
+                // make sure the last section is finished
+                if (section != null) section.Source = source.ToString();
+                return effect;
             }
         }
 

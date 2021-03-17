@@ -48,6 +48,11 @@ namespace ObjectTK.Shaders.Variables
                 StructMembers[i] = new StructFieldInfo(fields[i]);
         }
 
+        internal override void Initialize(Program program, PropertyInfo property)
+        {
+            base.Initialize(program, property);
+        }
+
         internal override void OnLink()
         {
             bool anyActive = false;

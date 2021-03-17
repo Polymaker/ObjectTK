@@ -77,7 +77,7 @@ namespace ObjectTK.Shaders
             Logger.DebugFormat("Compile status: {0}", compileStatus);
             // check shader info log
             var info = GL.GetShaderInfoLog(Handle);
-            if (SourceFiles != null) info = Regenechse.Replace(info, GetSource);
+            if (SourceFiles != null && SourceFiles.Count > 0) info = Regenechse.Replace(info, GetSource);
             if (!string.IsNullOrEmpty(info)) Logger.InfoFormat("Compile log:\n{0}", info);
             // log message and throw exception on compile error
             if (compileStatus == 1) return;

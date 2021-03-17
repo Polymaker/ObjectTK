@@ -90,6 +90,49 @@ namespace ObjectTK.Shaders
             return program;
         }
 
+        public static T CompileAndCreate<T>(string shaderCode)
+            where T : Program
+        {
+            // retrieve shader types and filenames from attributes
+            var shaders = ShaderSourceAttribute.GetShaderSources(typeof(T));
+
+            if (shaders.Count == 0) throw new ObjectTKException("ShaderSourceAttribute(s) missing!");
+
+            // create program instance
+            var program = (T)Activator.CreateInstance(typeof(T));
+            try
+            {
+                var effect = Effect.Parse(shaderCode);
+
+                // compile and attach all shaders
+                foreach (var attribute in shaders)
+                {
+                    // create a new shader of the appropriate type
+                    using (var shader = new Shader(attribute.Type))
+                    {
+                        Logger.DebugFormat("Compiling {0}: {1}", attribute.Type, attribute.EffectKey);
+
+                        string sectionName = attribute.Type.ToString();
+                        sectionName = sectionName.Substring(0, sectionName.IndexOf("Shader"));
+
+                        var effectSection = effect.GetMatchingSection(sectionName);
+                        // compile shader source
+                        shader.CompileSource(effectSection.Source);
+                        // attach shader to the program
+                        program.Attach(shader);
+                    }
+                }
+                // link and return the program
+                program.Link();
+            }
+            catch
+            {
+                program.Dispose();
+                throw;
+            }
+            return program;
+        }
+
         /// <summary>
         /// Load shader source file(s).<br/>
         /// Supports multiple source files via "#include xx" directives and corrects the line numbering by using the glsl standard #line directive.

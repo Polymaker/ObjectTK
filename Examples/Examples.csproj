@@ -49,11 +49,9 @@
     <Compile Include="AdvancedExamples\LoaderDDS.cs" />
     <Compile Include="AdvancedExamples\LoaderStatics.cs" />
     <Compile Include="AdvancedExamples\ParallaxMappingExample.cs" />
-    <Compile Include="BasicExamples\ArrayUniformExample.cs" />
     <Compile Include="BasicExamples\TextureGridExample.cs" />
     <Compile Include="BasicExamples\SkyboxExample.cs" />
     <Compile Include="ExampleProjectAttribute.cs" />
-    <Compile Include="Shaders\ArrayProgram.cs" />
     <Compile Include="Shaders\ParallaxProgram.cs" />
     <Compile Include="Shaders\SimpleColorProgram.cs" />
     <Compile Include="Shaders\SimpleTextureProgram.cs" />
@@ -75,7 +73,6 @@
     <Compile Include="Shaders\TextureGridProgram.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\Shaders\ArrayShader.glsl" />
     <None Include="Data\Shaders\ExampleShader.glsl" />
     <None Include="Data\Shaders\Gravity.glsl" />
     <None Include="Data\Shaders\Parallax.glsl" />
