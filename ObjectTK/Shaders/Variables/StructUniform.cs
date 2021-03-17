@@ -5,25 +5,19 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ObjectTK.Shaders.Variables
 {
+    /// <summary>
+    /// Represents a struct uniform.<br/>
+    /// The struct members are mapped to individual uniforms using the nomenclature: &quot;&lt;uniform name&gt;.&lt;member name&gt;&quot;
+    /// </summary>
+    /// <typeparam name="T">The struct type.</typeparam>
     public class StructUniform<T> : ProgramVariable where T : struct
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ArrayUniform<T>));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(StructUniform<T>));
 
-        private readonly StructFieldInfo[] StructMembers;
-
-        private class StructFieldInfo
-        {
-            public string Name { get; set; }
-            public int BaseLocation { get; set; }
-            public FieldInfo FI { get; set; }
-            public bool Active => BaseLocation >= 0;
-            public StructFieldInfo(FieldInfo fI)
-            {
-                FI = fI;
-                Name = fI.Name;
-                BaseLocation = 0;
-            }
-        }
+        /// <summary>
+        /// The individual uniforms used for each member of the struct.
+        /// </summary>
+        public UniformStructMember[] StructMembers { get; private set; }
 
         /// <summary>
         /// The current value of the uniform.
@@ -42,10 +36,10 @@ namespace ObjectTK.Shaders.Variables
         public StructUniform()
         {
             var fields = typeof(T).GetFields();
-            StructMembers = new StructFieldInfo[fields.Length];
+            StructMembers = new UniformStructMember[fields.Length];
 
             for (int i = 0; i < fields.Length; i++)
-                StructMembers[i] = new StructFieldInfo(fields[i]);
+                StructMembers[i] = new UniformStructMember(fields[i]);
         }
 
         internal override void OnLink()
@@ -55,7 +49,7 @@ namespace ObjectTK.Shaders.Variables
             {
                 string uniformName = $"{Name}.{StructMembers[i].Name}";
                 int fieldLoc = GL.GetUniformLocation(ProgramHandle, uniformName);
-                StructMembers[i].BaseLocation = fieldLoc;
+                StructMembers[i].Location = fieldLoc;
                 anyActive |= StructMembers[i].Active;
             }
 
@@ -79,7 +73,7 @@ namespace ObjectTK.Shaders.Variables
                 //string uniformName = $"{Name}.{StructMembers[i].Name}";
                 //int fieldLoc = GL.GetUniformLocation(ProgramHandle, uniformName);
 
-                int fieldLoc = StructMembers[i].BaseLocation;
+                int fieldLoc = StructMembers[i].Location;
                 object fieldValue = StructMembers[i].FI.GetValue(value);
                 UniformSetter.SetGeneric(StructMembers[i].FI.FieldType, fieldLoc, fieldValue);
             }

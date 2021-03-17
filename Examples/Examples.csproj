@@ -73,6 +73,7 @@
     <Compile Include="Shaders\TextureGridProgram.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\Shaders\StructUniforms.glsl" />
     <None Include="Data\Shaders\ExampleShader.glsl" />
     <None Include="Data\Shaders\Gravity.glsl" />
     <None Include="Data\Shaders\Parallax.glsl" />

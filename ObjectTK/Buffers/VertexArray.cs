@@ -80,10 +80,25 @@ namespace ObjectTK.Buffers
         /// <param name="mode">Specifies what kind of primitives to render.</param>
         /// <param name="count">Specifies the number of elements to be rendered.</param>
         /// <param name="type">Specifies the type of the values in indices.</param>
-        public void DrawElements(PrimitiveType mode, int count, DrawElementsType type = DrawElementsType.UnsignedInt)
+        /// <param name="offset">Specifies the offset (in bytes) into the index buffer object.</param>
+        public void DrawElements(PrimitiveType mode, int count, DrawElementsType type = DrawElementsType.UnsignedInt, int offset = 0)
         {
             AssertActive();
-            GL.DrawElements(mode, count, type, IntPtr.Zero);
+            GL.DrawElements(mode, count, type, new IntPtr(offset));
+        }
+
+        /// <summary>
+        /// Render primitives from array data with a per-element offset.
+        /// </summary>
+        /// <param name="mode">Specifies what kind of primitives to render.</param>
+        /// <param name="baseVertex">Specifies a constant that should be added to each element of indices​ when chosing elements from the enabled vertex arrays.</param>
+        /// <param name="count">Specifies the number of elements to be rendered.</param>
+        /// <param name="type">Specifies the type of the values in indices.</param>
+        /// <param name="offset">Specifies the offset (in bytes) into the index buffer object.</param>
+        public void DrawElementsBaseVertex(PrimitiveType mode, int baseVertex, int count, DrawElementsType type = DrawElementsType.UnsignedInt, int offset = 0)
+        {
+            AssertActive();
+            GL.DrawElementsBaseVertex(mode, count, type, new IntPtr(offset), baseVertex);
         }
 
         public void DrawElementsIndirect(PrimitiveType mode, DrawElementsType type = DrawElementsType.UnsignedInt, int offset = 0)
